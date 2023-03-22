@@ -46,21 +46,18 @@
 &dpu1 {
 	status = "okay";
 };
-#if 0
-//RD Not needed in Threatscan
 &fec2 {
 	pinctrl-names = "default";
-	pinctrl-0 = <&pinctrl_fec2>;
+//	pinctrl-0 = <&pinctrl_fec2>;
 	phy-mode = "rgmii-rxid";
-	phy-handle = <&ethphy1>;
-	fsl,ar8031-phy-fixup;
-	fsl,magic-packet;
-	status = "okay";
-	phy-reset-gpios = <&pca9534 5 GPIO_ACTIVE_LOW>;
-	phy-reset-duration = <10>;
-	phy-reset-post-delay = <100>;
+//	phy-handle = <&ethphy1>;
+//	fsl,ar8031-phy-fixup;
+//	fsl,magic-packet;
+	status = "disabled";
+//	phy-reset-gpios = <&pca9534 5 GPIO_ACTIVE_LOW>;
+//	phy-reset-duration = <10>;
+//	phy-reset-post-delay = <100>;
 };
-#endif
 
 &gpio1 {
 	pinctrl-names = "default";
