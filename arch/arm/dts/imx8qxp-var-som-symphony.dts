@@ -20,6 +20,25 @@
 		stdout-path = &lpuart3;
 	};
 
+	backlight: backlight {
+		compatible = "pwm-backlight";
+		pwms = <&pwm_mipi_lvds0 0 100000 0>;
+
+		brightness-levels = < 0  1  2  3  4  5  6  7  8  9
+				     10 11 12 13 14 15 16 17 18 19
+				     20 21 22 23 24 25 26 27 28 29
+				     30 31 32 33 34 35 36 37 38 39
+				     40 41 42 43 44 45 46 47 48 49
+				     50 51 52 53 54 55 56 57 58 59
+				     60 61 62 63 64 65 66 67 68 69
+				     70 71 72 73 74 75 76 77 78 79
+				     80 81 82 83 84 85 86 87 88 89
+				     90 91 92 93 94 95 96 97 98 99
+				    100>;
+		default-brightness-level = <80>;
+		status = "okay";
+	};
+
 	regulators {
 		reg_usb_otg1_vbus: regulator-usb-otg1-vbus {
 			compatible = "regulator-fixed";
@@ -63,11 +82,11 @@
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_backlight>;
 
-	lvds_backlight_hog {
+	lvds_enable_hog {
 		gpio-hog;
-		gpios = <27 0>;
+		gpios = <6 0>;
 		output-high;
-		line-name = "lvds_backlight";
+		line-name = "lvds_enable";
 	};
 };
 
@@ -114,9 +133,18 @@
 	imx8qxp-var-som {
 		pinctrl_backlight: backlightgrp {
 			fsl,pins = <
-				SC_P_MIPI_DSI0_GPIO0_00_LSIO_GPIO1_IO27		0x00000020
+				SC_P_SPI0_SDO_LSIO_GPIO1_IO06				0x00000020
+				
 			>;
 		};
+		
+		pinctrl_pwm_mipi_lvds0: mipi_lvds0_pwm_grp {
+			fsl,pins = <
+			SC_P_SPI0_CS1_LSIO_GPIO1_IO07					0x00000020
+			
+		>;
+	};
+	
 #if 0
 //RD Not needed in Threatscan
 		pinctrl_fec2: fec2grp {
@@ -159,7 +187,7 @@
 		pinctrl_usdhc2_gpio: usdhc2gpiogrp {
 			fsl,pins = <
 				SC_P_USDHC1_CD_B_LSIO_GPIO4_IO22		0x00000021
-				SC_P_SPI0_CS1_LSIO_GPIO1_IO07			0x00000021
+//				SC_P_SPI0_CS1_LSIO_GPIO1_IO07			0x00000021
 			>;
 		};
 
@@ -185,27 +213,44 @@
 	status = "okay";
 
 	lvds-channel@0 {
-		fsl,data-mapping = "jeida";
+//		fsl,data-mapping = "jeida";
+		fsl,data-mapping = "spwg";
 		fsl,data-width = <24>;
+		backlight = <&backlight>;
 		status = "okay";
 
 		display-timings {
 			native-mode = <&timing0>;
 
 			timing0: timing0 {
-				clock-frequency = <29232000>;
-				hactive = <800>;
-				vactive = <480>;
-				hback-porch = <40>;
-				hfront-porch = <40>;
-				vback-porch = <29>;
-				vfront-porch = <13>;
-				hsync-len = <48>;
-				vsync-len = <3>;
+				clock-frequency = <78566400>;
+				hactive = <1360>;
+				vactive = <768>;
+				hback-porch = <50>;
+				hfront-porch = <16>;
+				vback-porch = <48>;
+				vfront-porch = <80>;
+				hsync-len = <18>;
+				vsync-len = <32>;
+				hsync-active = <0>;
+				vsync-active = <0>;
+				de-active = <1>;
+				pixelclk-active = <0>;				
 			};
 		};
 	};
+	port@1 {
+		reg = <1>;
+	};
 };
+
+
+&pwm_mipi_lvds0 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_pwm_mipi_lvds0>;
+	status = "okay";
+};
+
 
 /* Console */
 &lpuart3 {
@@ -240,5 +285,5 @@
 	cd-gpios = <&gpio4 22 GPIO_ACTIVE_LOW>;
 	vmmc-supply = <&reg_usdhc2_vmmc>;
 	no-1-8-v;
-	status = "okay";
+	status = "disabled";
 };
