@@ -35,6 +35,30 @@ extern int var_setup_mac(struct var_eeprom *eeprom);
 			 (SC_PAD_28FDSOI_DSE_DV_HIGH << PADRING_DSE_SHIFT) | \
 			 (SC_PAD_28FDSOI_PS_PU << PADRING_PULL_SHIFT))
 
+//List of GPIO to make sure they are off at boot.
+
+#define ON_Printer	IMX_GPIO_NR(0,7)
+#define Finf_Clr 	IMX_GPIO_NR(4,5)
+#define acA0		IMX_GPIO_NR(0,29)
+#define acA1		IMX_GPIO_NR(3,3)
+#define acA2		IMX_GPIO_NR(0,10)
+#define acEN		IMX_GPIO_NR(0,11)
+#define Led_Y		IMX_GPIO_NR(1,21)
+#define Led_R		IMX_GPIO_NR(0,3)
+#define Led_G		IMX_GPIO_NR(0,4)
+#define Fan		IMX_GPIO_NR(3,23)
+#define Blower		IMX_GPIO_NR(0,1)
+#define PWR_FAN_EN	IMX_GPIO_NR(0,9)
+#define Compressor_DC	IMX_GPIO_NR(3,0)
+#define CHARGE_EN	IMX_GPIO_NR(0,19)
+#define PumpForward 	IMX_GPIO_NR(1,8)
+#define MainHeat	IMX_GPIO_NR(1,5)
+#define RegHeat	IMX_GPIO_NR(1,23)
+#define PumpReverse	IMX_GPIO_NR(1,24)
+#define BackFan	IMX_GPIO_NR(1,1)
+#define Buzzer		IMX_GPIO_NR(4,3)
+
+
 static iomux_cfg_t uart3_pads[] = {
 	SC_P_SCU_GPIO0_00 | MUX_MODE_ALT(3) | MUX_PAD_CTRL(UART_PAD_CTRL),
 	SC_P_SCU_GPIO0_01 | MUX_MODE_ALT(3) | MUX_PAD_CTRL(UART_PAD_CTRL),
@@ -68,12 +92,91 @@ int checkboard(void)
 
 int board_init(void)
 {
+struct gpio_desc typec_en_desc;
+int ret;
+
 #ifdef CONFIG_IMX_SNVS_SEC_SC_AUTO
 	int ret = snvs_security_sc_init();
 
 	if (ret)
 		return ret;
 #endif
+
+	gpio_request(ON_Printer, "ON_Printer");
+	gpio_direction_output(ON_Printer,0);
+	gpio_set_value(ON_Printer, 0);
+
+	gpio_request(Finf_Clr, "Finf_Clr");
+	gpio_direction_output(Finf_Clr,0);
+	gpio_set_value(Finf_Clr, 0);
+
+	gpio_request(acA0, "acA0");
+	gpio_direction_output(acA0,0);
+	gpio_set_value(acA0, 0);
+
+	gpio_request(acA1, "acA1");
+	gpio_direction_output(acA1,0);
+	gpio_set_value(acA1, 0);
+
+	gpio_request(acEN, "acEN");
+	gpio_direction_output(acEN,0);
+	gpio_set_value(acEN, 0);
+
+	gpio_request(Led_Y, "Led_Y");
+	gpio_direction_output(Led_Y,0);
+	gpio_set_value(Led_Y, 0);
+
+	gpio_request(Led_R, "Led_R");
+	gpio_direction_output(Led_R,0);
+	gpio_set_value(Led_R, 0);
+
+	gpio_request(Led_G, "Led_G");
+	gpio_direction_output(Led_G,0);
+	gpio_set_value(Led_G, 0);
+
+	gpio_request(Fan, "Fan");
+	gpio_direction_output(Fan,0);
+	gpio_set_value(Fan, 0);
+
+	gpio_request(Blower, "Blower");
+	gpio_direction_output(Blower,0);
+	gpio_set_value(Blower, 0);
+
+	gpio_request(PWR_FAN_EN, "PWR_FAN_EN");
+	gpio_direction_output(PWR_FAN_EN,0);
+	gpio_set_value(PWR_FAN_EN, 0);
+
+	gpio_request(Compressor_DC, "Compressor_DC");
+	gpio_direction_output(Compressor_DC,0);
+	gpio_set_value(Compressor_DC, 0);
+
+	gpio_request(CHARGE_EN, "CHARGE_EN");
+	gpio_direction_output(CHARGE_EN,0);
+	gpio_set_value(CHARGE_EN, 0);
+
+	gpio_request(PumpForward, "PumpForward");
+	gpio_direction_output(PumpForward,0);
+	gpio_set_value(PumpForward, 0);
+
+	gpio_request(MainHeat, "MainHeat");
+	gpio_direction_output(MainHeat,0);
+	gpio_set_value(MainHeat, 0);
+
+	gpio_request(RegHeat, "RegHeat");
+	gpio_direction_output(RegHeat,0);
+	gpio_set_value(RegHeat, 0);
+
+	gpio_request(PumpReverse, "PumpReverse");
+	gpio_direction_output(PumpReverse,0);
+	gpio_set_value(PumpReverse, 0);
+
+	gpio_request(BackFan, "BackFan");
+	gpio_direction_output(BackFan,0);
+	gpio_set_value(BackFan, 0);
+
+	gpio_request(Buzzer, "Buzzer");
+	gpio_direction_output(Buzzer,0);
+	gpio_set_value(Buzzer, 0);
 
 	return 0;
 }
