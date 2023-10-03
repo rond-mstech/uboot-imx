@@ -57,6 +57,8 @@ extern int var_setup_mac(struct var_eeprom *eeprom);
 #define PumpReverse	IMX_GPIO_NR(1,24)
 #define BackFan	IMX_GPIO_NR(1,1)
 #define Buzzer		IMX_GPIO_NR(4,3)
+//
+#define LCD_EN		IMX_GPIO_NR(1,6)
 
 
 static iomux_cfg_t uart3_pads[] = {
@@ -177,6 +179,10 @@ int ret;
 	gpio_request(Buzzer, "Buzzer");
 	gpio_direction_output(Buzzer,0);
 	gpio_set_value(Buzzer, 0);
+
+	gpio_request(LCD_EN, "LCD_EN");
+	gpio_direction_output(LCD_EN,0);
+	gpio_set_value(LCD_EN, 1);
 
 	return 0;
 }
