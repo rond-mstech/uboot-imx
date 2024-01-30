@@ -256,6 +256,12 @@ int flag;
 #ifdef CONFIG_ENV_VARS_UBOOT_RUNTIME_CONFIG
 	env_set("board_name", "VAR-SOM-MX8X");
 	env_set("board_rev", "iMX8QXP");
+	if (flag)
+		env_set("mst_platform", "Threatscan");
+	else
+		env_set("mst_platform", "Multiscan");
+	
+	
 #endif
 
 	env_set("sec_boot", "no");
