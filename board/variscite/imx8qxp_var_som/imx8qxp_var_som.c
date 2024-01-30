@@ -94,8 +94,7 @@ int checkboard(void)
 
 int board_init(void)
 {
-struct gpio_desc typec_en_desc;
-int ret;
+int ret = 0;
 
 #ifdef CONFIG_IMX_SNVS_SEC_SC_AUTO
 	int ret = snvs_security_sc_init();
@@ -181,10 +180,10 @@ int ret;
 	gpio_set_value(Buzzer, 0);
 
 	gpio_request(LCD_EN, "LCD_EN");
-	gpio_direction_output(LCD_EN,0);
+	gpio_direction_output(LCD_EN,1);
 	gpio_set_value(LCD_EN, 1);
 
-	return 0;
+	return ret;
 }
 
 void board_quiesce_devices(void)
@@ -220,8 +219,12 @@ int ft_board_setup(void *blob, struct bd_info *bd)
 
 #define SDRAM_SIZE_STR_LEN 5
 
+int usb_check_hub_mst(void);
+
 int board_late_init(void)
 {
+int flag;
+
 	struct var_eeprom *ep = VAR_EEPROM_DATA;
 	char sdram_size_str[SDRAM_SIZE_STR_LEN];
 
@@ -230,6 +233,17 @@ int board_late_init(void)
 	if (!var_eeprom_is_valid(ep))
 		var_eeprom_read_header(ep);
 
+
+	flag = usb_check_hub_mst();
+	if (flag)
+		puts("MS-TECH Threatscan unit\n");
+	else{
+		puts("MS-TECH Multiscan unit\n");
+		gpio_set_value(LCD_EN, 0);
+	}
+
+
+	
 #ifdef CONFIG_FEC_MXC
 	var_setup_mac(ep);
 #endif

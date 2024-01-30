@@ -30,6 +30,8 @@ static int usb_stor_curr_dev = -1; /* current device */
 static int __maybe_unused usb_ether_curr_dev = -1; /* current ethernet device */
 #endif
 
+int usb_check_hub_mst(void);
+
 /* some display routines (info command) */
 static char *usb_get_class_desc(unsigned char dclass)
 {
@@ -622,6 +624,66 @@ static void usb_show_info(struct usb_device *udev)
 	}
 }
 #endif
+
+
+static int th_exist_flag = 0;
+#ifdef CONFIG_DM_USB
+static void usb_mst_check_which_machine(struct usb_device *udev)
+{
+	struct udevice *child;
+
+//	usb_display_desc(udev);
+//	usb_display_config(udev);
+
+	for (device_find_first_child(udev->dev, &child);
+	     child;
+	     device_find_next_child(&child)) {
+		if (device_active(child) &&
+		    (device_get_uclass_id(child) != UCLASS_USB_EMUL) &&
+		    (device_get_uclass_id(child) != UCLASS_BLK)) {
+			udev = dev_get_parent_priv(child);
+			if (0 == strcmp("ILITEK",udev->mf))
+			{
+				th_exist_flag = 1;
+			}
+			else
+				usb_mst_check_which_machine(udev);
+		}
+	}
+}
+#endif
+
+int usb_check_hub_mst(void)
+{
+
+	th_exist_flag = 0;
+
+#ifdef CONFIG_DM_USB
+	do_usb_start();
+	usb_for_each_root_dev(usb_mst_check_which_machine);
+	do_usb_stop_keyboard(0);
+	usb_stop();
+#else
+int d;
+struct usb_device *udev = NULL;
+	do_usb_start();
+
+	for (d = 0; d < USB_MAX_DEVICE; d++) {
+		udev = usb_get_dev_index(d);
+		if (udev == NULL)
+			break;
+		if (0 == strcmp("ILITEK",udev->mf))
+		{
+			th_exist_flag = 1;
+		}
+	}
+	do_usb_stop_keyboard(0);
+	usb_stop();
+#endif
+
+return th_exist_flag;
+}
+
 
 /******************************************************************************
  * usb command intepreter
